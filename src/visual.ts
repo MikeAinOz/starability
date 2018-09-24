@@ -51,25 +51,26 @@ module powerbi.extensibility.visual {
                 new_ph.appendChild(this.urlNode);
                 this.target.appendChild(new_ph);
                 //
-                const new_p: HTMLFormElement = document.createElement("form");
-                new_p.appendChild(document.createTextNode("Update count:"));
-                const new_em: HTMLElement = document.createElement("em");
-                this.textNode = document.createTextNode(this.updateCount.toString());
-                new_em.appendChild(this.textNode);
-                new_p.appendChild(new_em);
-                new_p.appendChild(starability());
+                const new_f: HTMLFormElement = document.createElement("form");
+                
+                new_f.appendChild(starability());
                 var new_b = document.createElement("input");
                 new_b.setAttribute('type', "submit");
-                new_b.setAttribute('value', "Test");
+                new_b.setAttribute('value', "Rate");
                 new_b.setAttribute('id',"bUpdate");
-                /*
+                
                 new_b.onclick = function () {
-                       var val = getRadioVal( ni, 'rating' );
-                       alert(val);
-                       
-                }*/
-                new_p.appendChild(new_b);
-                this.target.appendChild(new_p);
+                       var val = getRadioVal( new_f, 'rating' );
+                       btnClick(options.element, val, new_ph.innerHTML);                       
+                }
+                new_f.appendChild(new_b);
+                this.target.appendChild(new_f);
+                const new_p5 = document.createElement("p");
+                new_p5.setAttribute('id',"final_msg");
+                new_p5.hidden = true;
+                var new_message = document.createTextNode("Rating Received");
+                new_p5.appendChild(new_message);
+                this.target.appendChild(new_p5);
             }
             function starability(){
                 var titles=[ "Unacceptable",
@@ -80,9 +81,18 @@ module powerbi.extensibility.visual {
                 var fieldset = document.createElement("fieldset");
                 fieldset.setAttribute("class","starability-basic");
                 var legend = document.createElement("legend");
-                var legendtext = document.createTextNode("Basic Star Rating");
+                var legendtext = document.createTextNode("Rate Your Selection");
                 legend.appendChild(legendtext);
                 fieldset.appendChild(legend);
+                var rb = document.createElement("input");
+                rb.setAttribute('type',"radio");
+                rb.setAttribute('id', "no-rate");
+                rb.setAttribute('class',"input-no-rate" );
+                rb.setAttribute('name',"rating");
+                rb.setAttribute('value',"0");
+                rb.checked = true;
+                rb.setAttribute ('aria-label',"No rating.");
+                fieldset.appendChild(rb);
                 for (var i in titles) {
                     var j = parseInt(i) + 1;
                     var rb = document.createElement("input");
@@ -90,7 +100,6 @@ module powerbi.extensibility.visual {
                     rb.setAttribute('id', "rate" + j);
                     rb.setAttribute('name',"rating");
                     rb.setAttribute('value',j.toString());
-                // var txt = document.createTextNode(titles[i]);
                     fieldset.appendChild(rb);
                     var lb = document.createElement("label");
                     lb.setAttribute('for',"rate" + j);
@@ -100,6 +109,54 @@ module powerbi.extensibility.visual {
                 }
                 return fieldset;
             }
+            function getRadioVal(form, name) {
+                var val;
+                // get list of radio buttons with specified name
+                var radios = form.elements[name];                
+                // loop through list of radio buttons
+                for (var i=0, len=radios.length; i<len; i++) {
+                    if ( radios[i].checked ) { // radio checked?
+                        val = radios[i].value; // if so, hold its value in val
+                        break; // and break out of for loop
+                    }
+                }
+                return val; // return value of checked radio or undefined if none checked
+            } 
+            function btnClick(target :HTMLElement, idValue , hiddenText){
+                console.log("button click ")
+                var new_p3 = document.createElement("p");
+                var message = "";              
+                var sendData = JSON.stringify({ "id" : idValue});
+                
+                var elem = document.createElement('textarea');
+                elem.innerHTML = hiddenText;
+                var postUrl = elem.value;
+                
+                $.ajax({
+                    url: postUrl,
+                    type:"POST",
+                    data: sendData,
+                    contentType:"application/json; charset=utf-8",
+                    dataType:"json",
+                    success: function(data){                                    
+                        $('#final_msg').fadeIn(); ;                      
+                        setTimeout(function() {
+                            $('#final_msg').fadeOut();
+                           }, 10000 )
+                        },                
+                    error: function( jqXhr, textStatus, errorThrown ){
+                        console.log( errorThrown );
+                    },                    
+                    statusCode: {
+                            202: function() {
+                              message = "success 202" ;                         
+                                new_p3.appendChild(document.createTextNode(message));
+                                target.appendChild(new_p3);
+                              }
+                            }                    
+                 }); 
+                               
+            }
         }
 
         public update(options: VisualUpdateOptions) {
@@ -108,8 +165,7 @@ module powerbi.extensibility.visual {
             if (typeof this.textNode !== "undefined") {
                 this.textNode.textContent = (this.updateCount++).toString();
             }
-            this.targetUrl = DataViewObjects.getValue(options.dataViews[0].metadata.objects, { objectName: "url", propertyName: "targetUrl" }, this.targetUrl);           
-           // console.log(this.targetUrl);  
+            this.targetUrl = DataViewObjects.getValue(options.dataViews[0].metadata.objects, { objectName: "url", propertyName: "targetUrl" }, this.targetUrl);        
             if (typeof this.urlNode !== "undefined") {
                 this.urlNode.textContent = this.targetUrl
            }
