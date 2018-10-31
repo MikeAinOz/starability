@@ -29,16 +29,13 @@ module powerbi.extensibility.visual {
     "use strict";
     export class Visual implements IVisual {
         private target: HTMLElement;
-        private updateCount: number;
         private settings: VisualSettings;
-        private textNode: Text;
         private urlNode: Text;
         private targetUrl: string;
 
         constructor(options: VisualConstructorOptions) {
             console.log('Visual constructor', options);
             this.target = options.element;
-            this.updateCount = 0;
             this.targetUrl = "url not set"
             if (typeof document !== "undefined") {
                 // hidden url
@@ -51,6 +48,8 @@ module powerbi.extensibility.visual {
                 new_ph.appendChild(this.urlNode);
                 this.target.appendChild(new_ph);
                 //
+                new_ph.dataset.partitionkey = "unassigned";
+                new_ph.dataset.rowkey = "unassigned";
                 const new_f: HTMLFormElement = document.createElement("form");
                 
                 new_f.appendChild(starability());
@@ -122,12 +121,18 @@ module powerbi.extensibility.visual {
                 }
                 return val; // return value of checked radio or undefined if none checked
             } 
-            function btnClick(target :HTMLElement, idValue , hiddenText){
-                console.log("button click ")
+            
+            function btnClick(target :HTMLElement, val, hiddenText){
+
                 var new_p3 = document.createElement("p");
-                var message = "";              
-                var sendData = JSON.stringify({ "id" : idValue});
+                var message = "";   
+                var datanode = document.getElementById("hidden_url");
+                var rowKey = datanode.dataset.rowkey;
+                var partitionKey = datanode.dataset.partitionkey; 
                 
+                var obj =    { partitionkey : partitionKey, rowkey : rowKey , value : val   };  
+                var sendData = JSON.stringify(obj);
+               
                 var elem = document.createElement('textarea');
                 elem.innerHTML = hiddenText;
                 var postUrl = elem.value;
@@ -162,12 +167,16 @@ module powerbi.extensibility.visual {
         public update(options: VisualUpdateOptions) {
             this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
             console.log('Visual update', options);
-            if (typeof this.textNode !== "undefined") {
-                this.textNode.textContent = (this.updateCount++).toString();
-            }
-            this.targetUrl = DataViewObjects.getValue(options.dataViews[0].metadata.objects, { objectName: "url", propertyName: "targetUrl" }, this.targetUrl);        
+            let dataViews = options.dataViews; 
+            let categorical = dataViews[0].categorical; 
+            let partitionkey = categorical.categories[0]; 
+            let rowkey = categorical.categories[1]; 
+            let dataValue = categorical.values[0]; 
+            let datanode = document.getElementById("hidden_url");
+            datanode.dataset.partitionkey = String(partitionkey.values);
+            datanode.dataset.rowkey = String(rowkey.values);
             if (typeof this.urlNode !== "undefined") {
-                this.urlNode.textContent = this.targetUrl
+                this.urlNode.textContent = this.settings.url.targetUrl;
            }
         }
 
