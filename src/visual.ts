@@ -50,7 +50,7 @@ module powerbi.extensibility.visual {
                 //
                 new_ph.dataset.partitionkey = "unassigned";
                 new_ph.dataset.rowkey = "unassigned";
-                const new_f: HTMLFormElement = document.createElement("form");
+                const new_f: HTMLElement = document.createElement("div");
                 
                 new_f.appendChild(starability());
                 var new_b = document.createElement("input");
@@ -59,7 +59,7 @@ module powerbi.extensibility.visual {
                 new_b.setAttribute('id',"bUpdate");
                 
                 new_b.onclick = function () {
-                       var val = getRadioVal( new_f, 'rating' );
+                       var val = getRadioVal(new_f);
                        btnClick(options.element, val, new_ph.innerHTML);                       
                 }
                 new_f.appendChild(new_b);
@@ -77,7 +77,7 @@ module powerbi.extensibility.visual {
                         "Mediocre",
                         "Copacetic",
                         "Outstanding"];
-                var fieldset = document.createElement("fieldset");
+                var fieldset = document.createElement("div");
                 fieldset.setAttribute("class","starability-basic");
                 var legend = document.createElement("legend");
                 var legendtext = document.createTextNode("Rate Your Selection");
@@ -108,10 +108,10 @@ module powerbi.extensibility.visual {
                 }
                 return fieldset;
             }
-            function getRadioVal(form, name) {
+            function getRadioVal(form) {
                 var val;
-                // get list of radio buttons with specified name
-                var radios = form.elements[name];                
+                // get list of radio buttons 
+                var radios = form.getElementsByTagName("input");                
                 // loop through list of radio buttons
                 for (var i=0, len=radios.length; i<len; i++) {
                     if ( radios[i].checked ) { // radio checked?
@@ -121,7 +121,7 @@ module powerbi.extensibility.visual {
                 }
                 return val; // return value of checked radio or undefined if none checked
             } 
-            
+
             function btnClick(target :HTMLElement, val, hiddenText){
 
                 var new_p3 = document.createElement("p");
@@ -175,9 +175,9 @@ module powerbi.extensibility.visual {
             let datanode = document.getElementById("hidden_url");
             datanode.dataset.partitionkey = String(partitionkey.values);
             datanode.dataset.rowkey = String(rowkey.values);
-            if (typeof this.urlNode !== "undefined") {
-                this.urlNode.textContent = this.settings.url.targetUrl;
-           }
+            this.urlNode.textContent = this.settings.url.targetUrl;
+            var norate : HTMLInputElement = document.getElementById("no-rate") as HTMLInputElement;
+            norate.checked = true;           
         }
 
         private static parseSettings(dataView: DataView): VisualSettings {
