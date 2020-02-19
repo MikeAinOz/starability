@@ -33,5 +33,6 @@
       ],
       "url": "./.api/v1.13.0/schema.dependencies.json"
     }
-  ]
+  ],
+  "git.alwaysShowStagedChangesResourceGroup": true
 }

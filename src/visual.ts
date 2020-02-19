@@ -23,9 +23,21 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-import DataViewObjects = powerbi.extensibility.utils.dataview.DataViewObjects;
+"use strict";
+import "core-js/stable";
+import "./../style/visual.less";
+import * as $ from "jquery";
+import powerbi from "powerbi-visuals-api";
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import IVisual = powerbi.extensibility.visual.IVisual;
+import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
+import VisualObjectInstance = powerbi.VisualObjectInstance;
+import DataView = powerbi.DataView;
+import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
-module powerbi.extensibility.visual {
+import { VisualSettings } from "./settings";
+
     "use strict";
     export class Visual implements IVisual {
         private target: HTMLElement;
@@ -48,8 +60,8 @@ module powerbi.extensibility.visual {
                 new_ph.appendChild(this.urlNode);
                 this.target.appendChild(new_ph);
                 //
-                new_ph.dataset.partitionkey = "unassigned";
-                new_ph.dataset.rowkey = "unassigned";
+                new_ph.dataset.id = "unassigned";
+                new_ph.dataset.user = "unassigned";
                 const new_f: HTMLElement = document.createElement("div");
                 
                 new_f.appendChild(starability());
@@ -123,14 +135,14 @@ module powerbi.extensibility.visual {
             } 
 
             function btnClick(target :HTMLElement, val, hiddenText){
-
+                console.log('btnClick');
                 var new_p3 = document.createElement("p");
                 var message = "";   
                 var datanode = document.getElementById("hidden_url");
-                var rowKey = datanode.dataset.rowkey;
-                var partitionKey = datanode.dataset.partitionkey; 
+                var id = datanode.dataset.id;
+                var user = datanode.dataset.user; 
                 
-                var obj =    { partitionkey : partitionKey, rowkey : rowKey , value : val   };  
+                var obj =    { id : id , value : val , user : user  };  
                 var sendData = JSON.stringify(obj);
                
                 var elem = document.createElement('textarea');
@@ -169,12 +181,11 @@ module powerbi.extensibility.visual {
             console.log('Visual update', options);
             let dataViews = options.dataViews; 
             let categorical = dataViews[0].categorical; 
-            let partitionkey = categorical.categories[0]; 
-            let rowkey = categorical.categories[1]; 
-            let dataValue = categorical.values[0]; 
+            let id = categorical.categories[0];              
+            let user = categorical.values[0]; 
             let datanode = document.getElementById("hidden_url");
-            datanode.dataset.partitionkey = String(partitionkey.values);
-            datanode.dataset.rowkey = String(rowkey.values);
+            datanode.dataset.id = String(id.values);
+            datanode.dataset.user = String(user.values);
             this.urlNode.textContent = this.settings.url.targetUrl;
             var norate : HTMLInputElement = document.getElementById("no-rate") as HTMLInputElement;
             norate.checked = true;           
@@ -193,4 +204,3 @@ module powerbi.extensibility.visual {
             return VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
         }
     }
-}

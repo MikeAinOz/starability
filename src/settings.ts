@@ -24,9 +24,9 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
     "use strict";
-    import DataViewObjectsParser = powerbi.extensibility.utils.dataview.DataViewObjectsParser;
+    import { dataViewObjectsParser } from "powerbi-visuals-utils-dataviewutils";
+    import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 
     export class VisualSettings extends DataViewObjectsParser {
       public dataPoint: dataPointSettings = new dataPointSettings();
@@ -50,4 +50,3 @@ module powerbi.extensibility.visual {
       public targetUrl: string = "https://";
       
     }
-}

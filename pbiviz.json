@@ -5,24 +5,21 @@
     "guid": "starability683518E99E1443478AD8AB95D9CF77D5",
     "visualClassName": "Visual",
     "version": "1.0.0",
-    "description": "",
-    "supportUrl": "",
-    "gitHubUrl": ""
+    "description": "Starability assign a score to am entity",
+    "supportUrl": "https://paradigmbi.com.au/",
+    "gitHubUrl": "https://github.com/MikeAinOz/pagestar"
   },
-  "apiVersion": "1.13.0",
+  "apiVersion": "2.6.0",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Mike Allen",
+    "email": "mike@mikeallen.com.au"
   },
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [
-    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
-    "node_modules/jquery/dist/jquery.min.js"
-  ],
+  "externalJS": [],
   "style": "style/visual.less",
   "capabilities": "capabilities.json",
-  "dependencies": "dependencies.json",
+  "dependencies": null,
   "stringResources": []
 }
