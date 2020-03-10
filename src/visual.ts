@@ -41,27 +41,17 @@ import { VisualSettings } from "./settings";
     "use strict";
     export class Visual implements IVisual {
         private target: HTMLElement;
-        private settings: VisualSettings;
-        private urlNode: Text;
-        private targetUrl: string;
+        private settings: VisualSettings;        
+        static _targetUrl: string;
+        static _id: string;
+        static _user: string;
 
         constructor(options: VisualConstructorOptions) {
             console.log('Visual constructor', options);
             this.target = options.element;
-            this.targetUrl = "url not set"
+            Visual._targetUrl = "url not set"
             if (typeof document !== "undefined") {
-                // hidden url
-                const new_ph = document.createElement("p");
-                new_ph.setAttribute('id',"hidden_url");
-                new_ph.setAttribute('class',"hidden_url)");
-                new_ph.hidden = true;
                 
-                this.urlNode = document.createTextNode(this.targetUrl);
-                new_ph.appendChild(this.urlNode);
-                this.target.appendChild(new_ph);
-                //
-                new_ph.dataset.id = "unassigned";
-                new_ph.dataset.user = "unassigned";
                 const new_f: HTMLElement = document.createElement("div");
                 
                 new_f.appendChild(starability());
@@ -72,7 +62,7 @@ import { VisualSettings } from "./settings";
                 
                 new_b.onclick = function () {
                        var val = getRadioVal(new_f);
-                       btnClick(options.element, val, new_ph.innerHTML);                       
+                       btnClick(val);                       
                 }
                 new_f.appendChild(new_b);
                 this.target.appendChild(new_f);
@@ -121,9 +111,9 @@ import { VisualSettings } from "./settings";
                 return fieldset;
             }
             function getRadioVal(form) {
-                var val;
+                let val;
                 // get list of radio buttons 
-                var radios = form.getElementsByTagName("input");                
+                let radios = form.getElementsByTagName("input");                
                 // loop through list of radio buttons
                 for (var i=0, len=radios.length; i<len; i++) {
                     if ( radios[i].checked ) { // radio checked?
@@ -134,23 +124,13 @@ import { VisualSettings } from "./settings";
                 return val; // return value of checked radio or undefined if none checked
             } 
 
-            function btnClick(target :HTMLElement, val, hiddenText){
-                console.log('btnClick');
-                var new_p3 = document.createElement("p");
-                var message = "";   
-                var datanode = document.getElementById("hidden_url");
-                var id = datanode.dataset.id;
-                var user = datanode.dataset.user; 
-                
-                var obj =    { id : id , value : val , user : user  };  
-                var sendData = JSON.stringify(obj);
+            function btnClick(val){
+                console.log('btnClick');                
+                let obj =    { id : Visual._id , value : val , user : Visual._user  };  
+                let sendData = JSON.stringify(obj);
                
-                var elem = document.createElement('textarea');
-                elem.innerHTML = hiddenText;
-                var postUrl = elem.value;
-                
                 $.ajax({
-                    url: postUrl,
+                    url: Visual._targetUrl,
                     type:"POST",
                     data: sendData,
                     contentType:"application/json; charset=utf-8",
@@ -163,14 +143,7 @@ import { VisualSettings } from "./settings";
                         },                
                     error: function( jqXhr, textStatus, errorThrown ){
                         console.log( errorThrown );
-                    },                    
-                    statusCode: {
-                            202: function() {
-                              message = "success 202" ;                         
-                                new_p3.appendChild(document.createTextNode(message));
-                                target.appendChild(new_p3);
-                              }
-                            }                    
+                    }                  
                  }); 
                                
             }
@@ -181,13 +154,9 @@ import { VisualSettings } from "./settings";
             console.log('Visual update', options);
             let dataViews = options.dataViews; 
             let categorical = dataViews[0].categorical; 
-            let id = categorical.categories[0];              
-            let user = categorical.values[0]; 
-            let datanode = document.getElementById("hidden_url");
-            datanode.dataset.id = String(id.values);
-            datanode.dataset.user = String(user.values);
-            this.urlNode.textContent = this.settings.url.targetUrl;
-            var norate : HTMLInputElement = document.getElementById("no-rate") as HTMLInputElement;
+            Visual._id = String(categorical.categories[0]);              
+            Visual._user = String(categorical.values[0]); 
+            let norate : HTMLInputElement = document.getElementById("no-rate") as HTMLInputElement;
             norate.checked = true;           
         }
 
