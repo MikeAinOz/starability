@@ -3,3 +3,5 @@ node_modules
 .DS_Store
 .tmp
 dist
+webpack.statistics.dev.html
+webpack.statistics.prod.html

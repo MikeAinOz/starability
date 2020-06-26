@@ -128,6 +128,7 @@ import { VisualSettings } from "./settings";
                 console.log('btnClick');                
                 let obj =    { id : Visual._id , value : val , user : Visual._user  };  
                 let sendData = JSON.stringify(obj);
+                console.log("sendData: ",sendData);
                
                 $.ajax({
                     url: Visual._targetUrl,
@@ -154,8 +155,9 @@ import { VisualSettings } from "./settings";
             console.log('Visual update', options);
             let dataViews = options.dataViews; 
             let categorical = dataViews[0].categorical; 
-            Visual._id = String(categorical.categories[0]);              
-            Visual._user = String(categorical.values[0]); 
+            Visual._id = String(categorical.categories[0].values[0]);              
+            Visual._user = String(categorical.values[0].values[0]); 
+            Visual._targetUrl = this.settings.url.targetUrl;
             let norate : HTMLInputElement = document.getElementById("no-rate") as HTMLInputElement;
             norate.checked = true;           
         }
