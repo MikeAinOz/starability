@@ -4,7 +4,7 @@
     "displayName": "starability",
     "guid": "starability683518E99E1443478AD8AB95D9CF77D5",
     "visualClassName": "Visual",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Starability assign a score to an entity",
     "supportUrl": "https://paradigmbi.com.au/",
     "gitHubUrl": "https://github.com/MikeAinOz/starability"
