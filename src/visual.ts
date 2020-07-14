@@ -62,7 +62,9 @@ import { VisualSettings } from "./settings";
                 
                 new_b.onclick = function () {
                        var val = getRadioVal(new_f);
-                       btnClick(val);                       
+                       if (val != 0) {
+                        btnClick(val); 
+                       }                      
                 }
                 new_f.appendChild(new_b);
                 this.target.appendChild(new_f);
